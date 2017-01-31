@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import moment from 'moment';
 import classnames from 'classnames';
 import parseInput from './utils/parseInput.js';
 import { defaultClasses } from './styles.js';
@@ -18,8 +17,8 @@ class PredefinedRanges extends Component {
     const range = this.props.ranges[name];
 
     this.props.onSelect({
-      startDate : parseInput(range['startDate'], null, 'startOf'),
-      endDate   : parseInput(range['endDate'], null, 'endOf'),
+      startDate : parseInput(range.startDate, null, 'startOf'),
+      endDate   : parseInput(range.endDate, null, 'endOf')
     }, PredefinedRanges);
   }
 
@@ -34,8 +33,8 @@ class PredefinedRanges extends Component {
       );
 
       const style = {
-        ...styles['PredefinedRangesItem'],
-        ...(active ? styles['PredefinedRangesItemActive'] : {}),
+        ...styles.PredefinedRangesItem,
+        ...(active ? styles.PredefinedRangesItemActive : {}),
       };
 
       const predefinedRangeClass = classnames({
@@ -65,7 +64,7 @@ class PredefinedRanges extends Component {
 
     return (
       <div
-        style={onlyClasses ? undefined : { ...styles['PredefinedRanges'], ...style }}
+        style={onlyClasses ? undefined : { ...styles.PredefinedRanges, ...style }}
         className={ classes.predefinedRanges }
       >
         { this.renderRangeList(classes) }

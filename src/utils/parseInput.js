@@ -3,7 +3,7 @@ import moment from 'moment';
 export default function parseInput(input, format, timeOfDay) {
   let output = null;
 
-  if (typeof input === 'undefined' ||  typeof input === 'null' || !input || input === '') {
+  if (!input || input === '') {
     output = moment()[timeOfDay]('day');
   } else if (typeof input === 'string') {
     output = moment(input, format)[timeOfDay]('day');

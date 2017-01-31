@@ -33,5 +33,23 @@ export default {
     endDate       : (now) => {
       return now;
     }
+  },
+
+  'Last 90 Days'  : {
+    startDate: (now) => {
+      return now.add(-30, 'days');
+    },
+    endDate       : (now) => {
+      return now;
+    }
+  },
+
+  'YTD'           : {
+    startDate: (now) => {
+      return `01/01/${now.year()}`;
+    },
+    endDate       : (now) => {
+      return now;
+    }
   }
 }

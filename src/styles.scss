@@ -38,10 +38,11 @@ $calendar-shadow: rgba($calendar-color, 0.25) 0 0 1em !default;
 }
 
 .rdr-MonthAndYear-innerWrapper {
+    display: flex;
+    justify-content: space-between;
     font-size: 12px;
     line-height: 18px;
     box-sizing: border-box;
-    height: 38px;
     padding: 10px 0;
     text-align: center;
 }
