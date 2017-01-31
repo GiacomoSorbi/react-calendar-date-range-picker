@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import classnames from 'classnames';
 
-import { defaultClasses } from './styles.js';
-
 class DayCell extends Component {
 
   constructor(props, context) {
@@ -25,29 +23,33 @@ class DayCell extends Component {
 
     switch (event.type) {
       case 'mouseenter':
-        newState['hover'] = true;
+        newState.hover = true;
         break;
 
       case 'mouseup':
       case 'mouseleave':
-        newState['hover'] = false;
-        newState['active'] = false;
+        newState.hover = false;
+        newState.active = false;
         break;
 
       case 'mousedown':
-        newState['active'] = true;
+        newState.active = true;
+        break;
+
+      default:
         break;
     }
 
     this.setState(newState);
+    return null;
   }
 
   handleSelect(event) {
     event.preventDefault();
 
-    if (this.props.isPassive) return null;
-
-    this.props.onSelect(this.props.dayMoment);
+    if (!this.props.isPassive) {
+      this.props.onSelect(this.props.dayMoment);
+    }
   }
 
   getStateStyles() {
@@ -55,15 +57,15 @@ class DayCell extends Component {
     const { isSelected, isInRange, isPassive, isStartEdge, isEndEdge, dayMoment, isToday, isSunday } = this.props;
     const { styles } = this;
 
-    const hoverStyle    = hover ? styles['DayHover'] : {};
-    const activeStyle   = active ? styles['DayActive'] : {};
-    const passiveStyle  = isPassive ? styles['DayPassive'] : {};
-    const startEdgeStyle = isStartEdge ? styles['DayStartEdge'] : {};
-    const endEdgeStyle   = isEndEdge ? styles['DayEndEdge'] : {};
-    const selectedStyle = isSelected ? styles['DaySelected'] : {};
-    const inRangeStyle  = isInRange ? styles['DayInRange'] : {};
-    const todayStyle    = isToday ? styles['DayToday'] : {};
-    const sundayStyle = isSunday ? styles['DaySunday'] : {};
+    const hoverStyle    = hover ? styles.DayHover : {};
+    const activeStyle   = active ? styles.DayActive : {};
+    const passiveStyle  = isPassive ? styles.DayPassive : {};
+    const startEdgeStyle = isStartEdge ? styles.DayStartEdge : {};
+    const endEdgeStyle   = isEndEdge ? styles.DayEndEdge : {};
+    const selectedStyle = isSelected ? styles.DaySelected : {};
+    const inRangeStyle  = isInRange ? styles.DayInRange : {};
+    const todayStyle    = isToday ? styles.DayToday : {};
+    const sundayStyle = isSunday ? styles.DaySunday : {};
 
     return {
       ...todayStyle,
@@ -101,9 +103,9 @@ class DayCell extends Component {
     const stateStyle = this.getStateStyles();
     const classes    = this.getClassNames(classNames);
     const dayWrapperStyles = {
-      width: styles['Day'].width,
-      height: styles['Day'].height,
-      display: styles['Day'].display
+      width: styles.Day.width,
+      height: styles.Day.height,
+      display: styles.Day.display
     };
 
     return (
@@ -116,7 +118,7 @@ class DayCell extends Component {
           onMouseDown={ this.handleMouseEvent.bind(this) }
           onMouseUp={ this.handleMouseEvent.bind(this) }
           className={ classes }
-          style={onlyClasses ? undefined : {...styles['Day'], ...stateStyle}}>
+          style={onlyClasses ? undefined : {...styles.Day, ...stateStyle}}>
           { dayMoment.date() }
         </span>
       </span>
@@ -125,7 +127,7 @@ class DayCell extends Component {
 }
 
 DayCell.defaultProps = {
-  theme       : { 'Day' : {} },
+  theme       : { Day : {} },
   onlyClasses : false
 }
 

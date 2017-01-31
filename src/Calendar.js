@@ -7,8 +7,8 @@ import getTheme, { defaultClasses } from './styles.js';
 
 function checkRange(dayMoment, range) {
   return (
-    dayMoment.isBetween(range['startDate'], range['endDate']) ||
-    dayMoment.isBetween(range['endDate'], range['startDate'])
+    dayMoment.isBetween(range.startDate, range.endDate) ||
+    dayMoment.isBetween(range.endDate, range.startDate)
   )
 }
 
@@ -45,7 +45,7 @@ class Calendar extends Component {
     const date = parseInput(props.date, format, 'startOf')
     const state = {
       date,
-      shownDate : (shownDate || range && range['endDate'] || date).clone().add(offset, 'months'),
+      shownDate : (shownDate || range && range.endDate || date).clone().add(offset, 'months'),
       firstDayOfWeek: (firstDayOfWeek || moment.localeData().firstDayOfWeek()),
     }
 
@@ -55,14 +55,14 @@ class Calendar extends Component {
 
   componentDidMount() {
     const { onInit } = this.props;
-    onInit && onInit(this.state.date);
+    if (onInit) onInit(this.state.date);
   }
 
   componentWillReceiveProps(nextProps) {
     const { range, offset } = nextProps;
 
-    if(range && range['endDate'] && !range['endDate'].isSame(range['startDate'], 'day')) {
-      this.setState({ shownDate : range['endDate'].clone().add(offset, 'months') })
+    if(range && range.endDate && !range.endDate.isSame(range.startDate, 'day')) {
+      this.setState({ shownDate : range.endDate.clone().add(offset, 'months') })
     }
   }
 
@@ -76,9 +76,8 @@ class Calendar extends Component {
 
   handleSelect(newDate) {
     const { link, onChange } = this.props;
-    const { date } = this.state;
 
-    onChange && onChange(newDate, Calendar);
+    if (onChange) onChange(newDate, Calendar);
 
     if (!link) {
       this.setState({ date : newDate });
@@ -93,12 +92,12 @@ class Calendar extends Component {
       return linkCB(direction);
     }
 
-    const current  = this.state.shownDate.month();
     const newMonth = this.state.shownDate.clone().add(direction, 'months');
 
     this.setState({
       shownDate : newMonth
     });
+    return null;
   }
 
   renderMonthAndYear(classes) {
@@ -106,36 +105,65 @@ class Calendar extends Component {
     let month           = moment.months(shownDate.month());
     const year            = shownDate.year();
     const { styles }      = this;
-    const { onlyClasses, lang, showMonthArrow} = this.props;
+    const { onlyClasses, lang, showMonthArrow, showYearAlone = true } = this.props;
 
     month = lang ? LangDic[lang][month.toLowerCase()] : month;
 
     return (
-      <div style={onlyClasses ? undefined : styles['MonthAndYear']} className={classes.monthAndYearWrapper}>
+      <div>
+        <div style={onlyClasses ? undefined : styles.MonthAndYear} className={classes.monthAndYearWrapper}>
+          {
+            showMonthArrow ?
+            <button
+              type="button"
+              style={onlyClasses ? undefined : { ...styles.MonthButton }}
+              className={classes.prevButton}
+              onClick={this.changeMonth.bind(this, -1)}>
+              <i style={onlyClasses ? undefined : { ...styles.MonthArrow, ...styles.MonthArrowPrev }}></i>
+            </button> : null
+          }
+          <span>
+            <span className={classes.month}>{month}</span>
+            {!showYearAlone ? <span className={classes.monthAndYearDivider}> - </span> : null}
+            {!showYearAlone ? <span className={classes.year}>{year}</span> : null}
+          </span>
+          {
+            showMonthArrow ?
+            <button
+              type="button"
+              style={onlyClasses ? undefined : { ...styles.MonthButton }}
+              className={classes.nextButton}
+              onClick={this.changeMonth.bind(this, +1)}>
+              <i style={onlyClasses ? undefined : { ...styles.MonthArrow, ...styles.MonthArrowNext }}></i>
+            </button> : null
+          }
+        </div>
         {
-          showMonthArrow ?
-          <button
-            type="button"
-            style={onlyClasses ? undefined : { ...styles['MonthButton'], float : 'left' }}
-            className={classes.prevButton}
-            onClick={this.changeMonth.bind(this, -1)}>
-            <i style={onlyClasses ? undefined : { ...styles['MonthArrow'], ...styles['MonthArrowPrev'] }}></i>
-          </button> : null
-        }
-        <span>
-          <span className={classes.month}>{month}</span>
-          <span className={classes.monthAndYearDivider}> - </span>
-          <span className={classes.year}>{year}</span>
-        </span>
-        {
-          showMonthArrow ?
-          <button
-            type="button"
-            style={onlyClasses ? undefined : { ...styles['MonthButton'], float : 'right' }}
-            className={classes.nextButton}
-            onClick={this.changeMonth.bind(this, +1)}>
-            <i style={onlyClasses ? undefined : { ...styles['MonthArrow'], ...styles['MonthArrowNext'] }}></i>
-          </button> : null
+          showYearAlone ?
+          <div style={onlyClasses ? undefined : styles.MonthAndYear} className={classes.monthAndYearWrapper}>
+            {showMonthArrow ?
+              <button
+                type="button"
+                style={onlyClasses ? undefined : {...styles.MonthButton}}
+                className={classes.prevButton}
+                onClick={this.changeMonth.bind(this, -12)}>
+                <i style={onlyClasses ? undefined : {...styles.MonthArrow, ...styles.MonthArrowPrev}}></i>
+              </button> : null
+            }
+            <span>
+              <span className={classes.year}>{year}</span>
+            </span>
+            {
+              showMonthArrow ?
+              <button
+                type="button"
+                style={onlyClasses ? undefined : {...styles.MonthButton}}
+                className={classes.nextButton}
+                onClick={this.changeMonth.bind(this, +12)}>
+                <i style={onlyClasses ? undefined : {...styles.MonthArrow, ...styles.MonthArrowNext}}></i>
+              </button> : null
+            }
+          </div> : null
         }
       </div>
     )
@@ -173,11 +201,9 @@ class Calendar extends Component {
     const startOfMonth             = shownDate.clone().startOf('month').isoWeekday();
 
     const lastMonth                = shownDate.clone().month(monthNumber - 1);
-    const lastMonthNumber          = lastMonth.month();
     const lastMonthDayCount        = lastMonth.daysInMonth();
 
     const nextMonth                = shownDate.clone().month(monthNumber + 1);
-    const nextMonthNumber          = nextMonth.month();
 
     const days                     = [];
 
@@ -192,8 +218,8 @@ class Calendar extends Component {
     for (let i = 1; i <= dayCount; i++) {
       const dayMoment  = shownDate.clone().date(i);
       // set days before today to isPassive
-      var _today = moment()
-      if (disableDaysBeforeToday && Number(dayMoment.diff(_today,"days")) <= -1) {
+      const _today = moment()
+      if (disableDaysBeforeToday && Number(dayMoment.diff(_today, 'days')) <= -1) {
         days.push({ dayMoment ,isPassive:true});
       } else {
         days.push({ dayMoment });
