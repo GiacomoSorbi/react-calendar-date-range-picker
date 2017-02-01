@@ -6,7 +6,7 @@ import Section from 'components/Section';
 import 'normalize.css';
 import 'styles/global'
 import styles from 'styles/main';
-import '../../../src/styles.scss'
+import '../../../css/styles.scss'
 
 export default class Main extends Component {
   constructor(props, context) {
